@@ -1,3 +1,5 @@
+## Note
+Đây là thử nghiệm cá nhân. Có thể có lỗi.
 ## Vbook Extensions
 Extensions cho app Vbook App.
 
