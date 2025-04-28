@@ -26,6 +26,12 @@ function execute(url, page) {
         };
     });
 
+    Console.log("Fetching URL: " + fullUrl);
+    Console.log("Response status: " + response.status);
+
+    // Kiểm tra danh sách truyện
+    Console.log("Books: ", books);
+    
     // Kiểm tra xem có trang tiếp theo không
     let next = doc.select(".pagination .next").attr("href") ? (page || 1) + 1 : null;
 
