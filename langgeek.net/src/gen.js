@@ -1,7 +1,7 @@
 function execute(url, page) {
-    Console.log("Fetching URL: " + url + (page ? '/page/' + page : ''));
+    if (!page) page = '1';
     
-    let response = fetch(url + (page ? '/page/' + page : ''), {
+    let response = fetch(url + (page === '1' ? '' : '/page/' + page), {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
         }
@@ -11,26 +11,32 @@ function execute(url, page) {
         let doc = response.html();
         let novels = [];
 
-        // Find all novel entries
+        // Find all comic/novel entries
         let entries = doc.select("article.post");
-        Console.log("Found " + entries.size() + " entries");
-
+        
         entries.forEach(e => {
             try {
-                let link = e.select("h2.entry-title a").first();
-                if (link) {
-                    let href = link.attr("href");
-                    // Ensure the link uses the /truyen/ format
-                    if (!href.includes("/truyen/")) {
-                        href = href.replace("langgeek.net/", "langgeek.net/truyen/");
+                let titleLink = e.select("h2.entry-title a").first();
+                if (titleLink) {
+                    let novel = {
+                        name: titleLink.text().trim(),
+                        link: titleLink.attr("href"),
+                        host: "https://langgeek.net"
+                    };
+
+                    // Get cover image
+                    let img = e.select("img.wp-post-image").first();
+                    if (img) {
+                        novel.cover = img.attr("data-src") || img.attr("src");
                     }
-                    
-                    novels.push({
-                        name: link.text(),
-                        link: href,
-                        cover: e.select("img.wp-post-image").attr("src"),
-                        description: e.select("div.entry-content").text()
-                    });
+
+                    // Get description
+                    let desc = e.select("div.entry-content").first();
+                    if (desc) {
+                        novel.description = desc.text().trim();
+                    }
+
+                    novels.push(novel);
                 }
             } catch (error) {
                 Console.log("Error processing entry: " + error);
@@ -39,13 +45,11 @@ function execute(url, page) {
 
         // Handle pagination
         let nextPage = null;
-        let lastPage = doc.select("a.page-numbers").last();
-        if (lastPage && lastPage.hasClass("next")) {
-            let currentPage = parseInt(page || "1");
-            nextPage = (currentPage + 1).toString();
+        let pagination = doc.select("nav.navigation a.next").first();
+        if (pagination) {
+            nextPage = (parseInt(page) + 1).toString();
         }
 
-        Console.log("Found " + novels.length + " novels");
         return Response.success(novels, nextPage);
     }
 
