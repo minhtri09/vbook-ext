@@ -7,55 +7,61 @@ function execute(url, page) {
         }
     });
 
+    // Debug logging
+    Console.log("Fetching URL: " + url + (page == '1' ? '' : '/page/' + page));
+    Console.log("Response status: " + response.status);
+
     if (response.ok) {
         let doc = response.html();
         let novels = [];
         
-        // Debug log
-        Console.log("URL being processed: " + url);
-        Console.log("Page number: " + page);
-        
-        // Select all novel items with more specific selector
-        let items = doc.select("div.list-novel div.item");
-        Console.log("Number of items found: " + items.size());
+        // Try different possible selectors for novel items
+        let items = doc.select("article.post-item, div.post-item, div.novel-item");
+        Console.log("Found items: " + items.size());
 
         items.forEach(e => {
             try {
-                let title = e.select("h3.title a").first();
-                let cover = e.select("img.book-cover, img.thumbnail").first();
-                let excerpt = e.select("div.excerpt, div.desc-novel").first();
+                let title = e.select("h2 a, h3 a").first();
+                let coverImg = e.select("img").first();
+                let description = e.select("div.excerpt, div.summary, p.excerpt").first();
 
                 if (title != null) {
-                    novels.push({
-                        name: title.text(),
+                    let novelInfo = {
+                        name: title.text().trim(),
                         link: title.attr("href"),
-                        cover: cover ? cover.attr("src") : "",
-                        description: excerpt ? excerpt.text() : ""
-                    });
+                    };
+
+                    if (coverImg != null) {
+                        novelInfo.cover = coverImg.attr("src") || coverImg.attr("data-src");
+                    }
+
+                    if (description != null) {
+                        novelInfo.description = description.text().trim();
+                    }
+
+                    novels.push(novelInfo);
                 }
             } catch (error) {
                 Console.log("Error processing item: " + error);
             }
         });
 
-        // Check if we found any novels
         if (novels.length === 0) {
-            Console.log("No novels found on page");
+            Console.log("No novels found - HTML structure: " + doc.html());
             return Response.error("Không tìm thấy truyện nào");
         }
 
-        // Get next page with more reliable detection
+        // Check for next page
         let nextPage = null;
         try {
-            let pagination = doc.select("div.pagination, ul.pagination");
-            let currentPageElement = pagination.select("span.current, span.page-numbers.current").first();
-            if (currentPageElement != null) {
-                let currentPageNum = parseInt(currentPageElement.text());
-                let maxPageElement = pagination.select("a.page-numbers:not(.next)").last();
-                if (maxPageElement != null) {
-                    let maxPage = parseInt(maxPageElement.text());
-                    if (currentPageNum < maxPage) {
-                        nextPage = (currentPageNum + 1).toString();
+            let nextLink = doc.select("a.next, a.nextpostslink, nav.pagination a:contains(»)").first();
+            if (nextLink != null) {
+                let nextUrl = nextLink.attr("href");
+                if (nextUrl) {
+                    // Extract page number from URL
+                    let match = nextUrl.match(/page\/(\d+)/);
+                    if (match) {
+                        nextPage = match[1];
                     }
                 }
             }
@@ -67,9 +73,5 @@ function execute(url, page) {
         return Response.success(novels, nextPage);
     }
 
-    // Log the error response
-    Console.log("HTTP Status: " + response.status);
-    Console.log("Response headers: " + JSON.stringify(response.headers));
-    
     return Response.error("Không thể tải trang - HTTP Status: " + response.status);
 }
