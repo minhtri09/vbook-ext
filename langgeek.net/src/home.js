@@ -2,12 +2,12 @@ function execute() {
     return Response.success([
         {
             title: "Mới cập nhật",
-            input: "https://langgeek.net/latest",
+            input: "https://langgeek.net/truyen-moi-cap-nhat/",
             script: "homecontent.js"
         },
         {
-            title: "Được yêu thích",
-            input: "https://langgeek.net/popular",
+            title: "Top truyện",
+            input: "https://langgeek.net/top-truyen/",
             script: "homecontent.js"
         }
     ]);
