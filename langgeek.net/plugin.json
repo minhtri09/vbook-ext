@@ -1,13 +1,12 @@
 {
   "metadata": {
-    "name": "LangGeek",
+    "name": "Langgeek",
     "author": "minhtri09",
     "version": 1,
     "source": "https://langgeek.net",
-    "regexp": "https://langgeek\\.net/.*",
-    "description": "Extension để lấy truyện từ trang langgeek.net",
+    "regexp": "langgeek.net/.*?$",
+    "description": "Đọc truyện trên langgeek.net",
     "locale": "vi_VN",
-    "tag": "",
     "type": "novel"
   },
   "script": {
