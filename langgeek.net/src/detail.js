@@ -1,15 +1,30 @@
 function execute(url) {
-    let response = fetch(url);
+    // Ensure we're using the /truyen/ format
+    if (!url.includes("/truyen/")) {
+        url = url.replace("langgeek.net/", "langgeek.net/truyen/");
+    }
+
+    let response = fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        }
+    });
+
     if (response.ok) {
         let doc = response.html();
         
+        let name = doc.select("h1.entry-title").text();
+        let cover = doc.select("div.truyen-info img").attr("src");
+        let detail = doc.select("div.truyen-info").text();
+        let description = doc.select("div.summary").text();
+
         return Response.success({
-            name: doc.select("h1.entry-title").text(),
-            cover: doc.select("div.book-thumbnail img").attr("src"),
-            author: doc.select("div.book-information div:contains(Tác giả:) span").text(),
-            description: doc.select("div.desc-text").text(),
-            detail: doc.select("div.book-information").text(),
-            ongoing: doc.select("div.book-information").text().includes("Đang ra")
+            name: name,
+            cover: cover,
+            author: detail.match(/Tác giả:\s*([^\n]+)/)?.[1] || "",
+            description: description,
+            detail: detail,
+            ongoing: detail.includes("Đang ra") || detail.includes("Updating")
         });
     }
     return Response.error("Không thể tải thông tin truyện");
