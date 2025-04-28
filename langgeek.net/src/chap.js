@@ -1,13 +1,16 @@
 function execute(url) {
-    let response = fetch(url);
+    let response = fetch(url, {
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        }
+    });
+
     if (response.ok) {
         let doc = response.html();
-        let content = doc.select("div.chapter-content");
+        let content = doc.select("div.entry-content");
         
-        // Remove ads and unnecessary elements
-        content.select("div.ads-chapter").remove();
-        content.select("script").remove();
-        content.select("iframe").remove();
+        // Remove any ads or unnecessary elements
+        content.select("div[id*='ads'], script, iframe").remove();
         
         return Response.success(content.html());
     }
