@@ -1,5 +1,7 @@
 function execute(key, page) {
-    let response = fetch(`https://langgeek.net/page/${page || 1}?s=${key}`, {
+    if (!page) page = '1';
+    
+    let response = fetch(`https://langgeek.net/page/${page}?s=${key}`, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
         }
@@ -10,30 +12,41 @@ function execute(key, page) {
         let novels = [];
 
         doc.select("article.post").forEach(e => {
-            let link = e.select("h2.entry-title a").first();
-            if (link) {
-                let href = link.attr("href");
-                // Ensure the link uses the /truyen/ format
-                if (!href.includes("/truyen/")) {
-                    href = href.replace("langgeek.net/", "langgeek.net/truyen/");
+            let titleLink = e.select("h2.entry-title a").first();
+            if (titleLink) {
+                let novel = {
+                    name: titleLink.text().trim(),
+                    link: titleLink.attr("href"),
+                    host: "https://langgeek.net"
+                };
+
+                // Get cover image
+                let img = e.select("img.wp-post-image").first();
+                if (img) {
+                    novel.cover = img.attr("data-src") || img.attr("src");
                 }
-                
-                novels.push({
-                    name: link.text(),
-                    link: href,
-                    cover: e.select("img.wp-post-image").attr("src"),
-                    description: e.select("div.entry-content").text()
-                });
+
+                // Get description
+                let desc = e.select("div.entry-content").first();
+                if (desc) {
+                    novel.description = desc.text().trim();
+                }
+
+                novels.push(novel);
             }
         });
 
+        // Handle pagination
         let nextPage = null;
-        let lastPage = doc.select("a.page-numbers").last();
-        if (lastPage && lastPage.hasClass("next")) {
-            nextPage = (parseInt(page || "1") + 1).toString();
+        if (doc.select("nav.navigation a.next").first()) {
+            nextPage = (parseInt(page) + 1).toString();
         }
 
-        return Response.success(novels, nextPage);
+        if (novels.length > 0) {
+            return Response.success(novels, nextPage);
+        }
+        return Response.error("Không tìm thấy kết quả");
     }
-    return Response.error("Không thể tìm kiếm - HTTP Status: " + response.status);
+
+    return Response.error("Không thể tìm kiếm");
 }
