@@ -1,17 +1,27 @@
 function execute(key, page) {
-    let searchUrl = `https://langgeek.net/search?q=${encodeURIComponent(key)}&page=${page || 1}`;
-    let response = fetch(searchUrl);
-    if (!response.ok) return Response.error("Failed to fetch search results.");
+    if (!page) page = '1';
+    
+    let response = fetch(`https://langgeek.net/page/${page}?s=${key}&post_type=novel`);
+    if (response.ok) {
+        let doc = response.html();
+        let novels = [];
+        
+        doc.select("div.item").forEach(e => {
+            novels.push({
+                name: e.select("h3.title a").text(),
+                link: e.select("h3.title a").attr("href"),
+                cover: e.select("img.book-cover").attr("src"),
+                description: e.select("div.excerpt").text()
+            });
+        });
 
-    let doc = response.html();
-    let results = doc.select(".search-result-item").toArray().map(item => ({
-        name: item.select(".title").text(),
-        link: item.select("a").attr("href"),
-        cover: item.select(".cover img").attr("src"),
-        description: item.select(".description").text()
-    }));
+        let next = doc.select("div.pagination a.next").attr("href");
+        let nextPage = null;
+        if (next) {
+            nextPage = (parseInt(page) + 1).toString();
+        }
 
-    let nextPage = doc.select(".pagination .next").attr("href") ? (page || 1) + 1 : null;
-
-    return Response.success(results, nextPage);
+        return Response.success(novels, nextPage);
+    }
+    return Response.error("Không thể tìm truyện");
 }
