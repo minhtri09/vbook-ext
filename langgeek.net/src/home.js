@@ -7,7 +7,7 @@ function execute() {
         },
         { 
             title: "Top truyện", 
-            input: "https://langgeek.net/top", // Updated URL for top novels
+            input: "https://langgeek.net/top-truyen", // Updated URL for top novels
             script: "gen.js" 
         }
     ]);
