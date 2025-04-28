@@ -1,7 +1,8 @@
-function execute(url, page) {
-    if (!page) page = '1';
+function execute(url) {
+    // Clean and standardize the URL
+    url = url.replace(/\/$/, ''); // Remove trailing slash
     
-    let response = fetch(url + (page === '1' ? '' : '/page/' + page), {
+    let response = fetch(url, {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
         }
@@ -9,49 +10,26 @@ function execute(url, page) {
 
     if (response.ok) {
         let doc = response.html();
-        let novels = [];
-
-        // Find all comic/novel entries
-        let entries = doc.select("article.post");
         
-        entries.forEach(e => {
-            try {
-                let titleLink = e.select("h2.entry-title a").first();
-                if (titleLink) {
-                    let novel = {
-                        name: titleLink.text().trim(),
-                        link: titleLink.attr("href"),
-                        host: "https://langgeek.net"
-                    };
-
-                    // Get cover image
-                    let img = e.select("img.wp-post-image").first();
-                    if (img) {
-                        novel.cover = img.attr("data-src") || img.attr("src");
-                    }
-
-                    // Get description
-                    let desc = e.select("div.entry-content").first();
-                    if (desc) {
-                        novel.description = desc.text().trim();
-                    }
-
-                    novels.push(novel);
-                }
-            } catch (error) {
-                Console.log("Error processing entry: " + error);
-            }
-        });
-
-        // Handle pagination
-        let nextPage = null;
-        let pagination = doc.select("nav.navigation a.next").first();
-        if (pagination) {
-            nextPage = (parseInt(page) + 1).toString();
+        let name = doc.select("h1.entry-title").first().text();
+        let info = doc.select("div.manga-info, div.comic-info, div.truyen-info").first();
+        let coverImg = info.select("img").first();
+        let cover = coverImg ? (coverImg.attr("data-src") || coverImg.attr("src")) : "";
+        
+        // Get the description
+        let description = doc.select("div.summary, div.manga-description, div.comic-description").text();
+        if (!description) {
+            description = doc.select("div.entry-content > p").first().text();
         }
 
-        return Response.success(novels, nextPage);
+        return Response.success({
+            name: name,
+            cover: cover,
+            description: description,
+            detail: info.text(),
+            host: "https://langgeek.net",
+            ongoing: true // Since these are ongoing series
+        });
     }
-
-    return Response.error("Không thể tải trang - HTTP Status: " + response.status);
+    return Response.error("Không thể tải thông tin truyện");
 }
