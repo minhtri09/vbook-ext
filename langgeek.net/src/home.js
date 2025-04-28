@@ -1,8 +1,8 @@
 function execute() {
     return Response.success([
         { 
-            title: "Mới cập nhật", 
-            input: "https://langgeek.net",  // Main page has latest updates
+            title: "Tất cả truyện", 
+            input: "https://langgeek.net",
             script: "gen.js" 
         }
     ]);
