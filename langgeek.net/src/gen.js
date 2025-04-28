@@ -1,75 +1,51 @@
 function execute(url, page) {
-    if (!page) page = '1';
+    Console.log("Fetching URL: " + url + (page ? '/page/' + page : ''));
     
-    let response = fetch(url + (page == '1' ? '' : '/page/' + page), {
+    let response = fetch(url + (page ? '/page/' + page : ''), {
         headers: {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
         }
     });
 
-    // Debug logging
-    Console.log("Fetching URL: " + url + (page == '1' ? '' : '/page/' + page));
-    Console.log("Response status: " + response.status);
-
     if (response.ok) {
         let doc = response.html();
         let novels = [];
-        
-        // Try different possible selectors for novel items
-        let items = doc.select("article.post-item, div.post-item, div.novel-item");
-        Console.log("Found items: " + items.size());
 
-        items.forEach(e => {
+        // Find all novel entries
+        let entries = doc.select("article.post");
+        Console.log("Found " + entries.size() + " entries");
+
+        entries.forEach(e => {
             try {
-                let title = e.select("h2 a, h3 a").first();
-                let coverImg = e.select("img").first();
-                let description = e.select("div.excerpt, div.summary, p.excerpt").first();
-
-                if (title != null) {
-                    let novelInfo = {
-                        name: title.text().trim(),
-                        link: title.attr("href"),
-                    };
-
-                    if (coverImg != null) {
-                        novelInfo.cover = coverImg.attr("src") || coverImg.attr("data-src");
+                let link = e.select("h2.entry-title a").first();
+                if (link) {
+                    let href = link.attr("href");
+                    // Ensure the link uses the /truyen/ format
+                    if (!href.includes("/truyen/")) {
+                        href = href.replace("langgeek.net/", "langgeek.net/truyen/");
                     }
-
-                    if (description != null) {
-                        novelInfo.description = description.text().trim();
-                    }
-
-                    novels.push(novelInfo);
+                    
+                    novels.push({
+                        name: link.text(),
+                        link: href,
+                        cover: e.select("img.wp-post-image").attr("src"),
+                        description: e.select("div.entry-content").text()
+                    });
                 }
             } catch (error) {
-                Console.log("Error processing item: " + error);
+                Console.log("Error processing entry: " + error);
             }
         });
 
-        if (novels.length === 0) {
-            Console.log("No novels found - HTML structure: " + doc.html());
-            return Response.error("Không tìm thấy truyện nào");
-        }
-
-        // Check for next page
+        // Handle pagination
         let nextPage = null;
-        try {
-            let nextLink = doc.select("a.next, a.nextpostslink, nav.pagination a:contains(»)").first();
-            if (nextLink != null) {
-                let nextUrl = nextLink.attr("href");
-                if (nextUrl) {
-                    // Extract page number from URL
-                    let match = nextUrl.match(/page\/(\d+)/);
-                    if (match) {
-                        nextPage = match[1];
-                    }
-                }
-            }
-        } catch (error) {
-            Console.log("Error processing pagination: " + error);
+        let lastPage = doc.select("a.page-numbers").last();
+        if (lastPage && lastPage.hasClass("next")) {
+            let currentPage = parseInt(page || "1");
+            nextPage = (currentPage + 1).toString();
         }
 
-        Console.log("Next page: " + nextPage);
+        Console.log("Found " + novels.length + " novels");
         return Response.success(novels, nextPage);
     }
 
