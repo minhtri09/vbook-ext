@@ -1,21 +1,19 @@
 {
   "metadata": {
-    "name": "Langgeek",
-    "author": "nguy3nct09",
+    "name": "LangGeek",
+    "author": "minhtri09",
     "version": 1,
     "source": "https://langgeek.net",
-    "regexp": "https://langgeek.net/justice-league-infinity/chuong-1-46/",
-    "description": "Đọc truyện comic DC, MCU",
-    "locale": "vi-VN",
-    "language": "javascript",
-    "type": "comic"
+    "regexp": "https://langgeek\\.net/.*",
+    "description": "Extension để lấy truyện từ trang langgeek.net",
+    "locale": "vi_VN",
+    "tag": "",
+    "type": "novel"
   },
   "script": {
-    "home": "home.js",
-    "genre": "genre.js",
     "detail": "detail.js",
-    "search": "search.js",
     "toc": "toc.js",
-    "chap": "chap.js"
+    "chap": "chap.js",
+    "search": "search.js"
   }
 }
