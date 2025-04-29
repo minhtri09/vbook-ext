@@ -1,19 +1,15 @@
 function execute(url) {
     let response = fetch(url, {
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         },
-        timeout: 3000
+        timeout: 5000
     });
-
     if (response.ok) {
         let doc = response.html();
-        let content = doc.select("div.entry-content");
-        
-        // Remove unwanted elements
-        content.select("div[id*='ads'], script, iframe, div.code-block, div.sharedaddy").remove();
-        
-        return Response.success(content.html());
+        // Lấy nội dung chương (ảnh hoặc text)
+        let content = doc.select("div.entry-content").html();
+        return Response.success(content);
     }
     return Response.error("Không thể tải nội dung chương");
 }
