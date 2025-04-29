@@ -7,8 +7,7 @@
         "regexp": "langgeek\\.net/(.*?)$",
         "description": "Đọc truyện từ langgeek.net",
         "locale": "vi_VN",
-        "type": "novel",
-        "tag": ""
+        "type": "comic"
     },
     "script": {
         "home": "home.js",
