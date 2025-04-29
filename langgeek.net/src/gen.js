@@ -7,32 +7,22 @@ function execute(url, page) {
     }
     let response = fetch(fullUrl, {
         headers: {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            "User-Agent": "Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Mobile Safari/537.36"
         },
-        timeout: 5000
+        timeout: 8000
     });
-    if (response.ok) {
-        let doc = response.html();
-        let novels = [];
-        doc.select("article.post").forEach(e => {
-            let title = e.select("h2.entry-title a").first();
-            let img = e.select("img.wp-post-image").first();
-            if (title && img) {
-                novels.push({
-                    name: title.text().trim(),
-                    link: title.attr("href"),
-                    cover: img.attr("src"),
-                    description: e.select("div.entry-content p").first().text().trim()
-                });
-            }
-        });
-        // Phân trang
-        let nextPage = null;
-        let nextBtn = doc.select("a.next.page-numbers").first();
-        if (nextBtn) {
-            nextPage = (parseInt(page) + 1).toString();
+    if (!response.ok) {
+        Console.log("HTTP Status: " + response.status);
+        try {
+            let body = response.text();
+            Console.log("Body: " + body);
+        } catch (e) {
+            Console.log("Không đọc được body: " + e);
         }
-        return Response.success(novels, nextPage);
+        return Response.error("Không thể tải trang chủ -- Status: " + response.status);
     }
-    return Response.error("Không thể tải trang chủ hoặc bị chặn IP/User-Agent");
+    let doc = response.html();
+    // Ghi lại đoạn đầu mã HTML để debug
+    Console.log(doc.html().substring(0, 1000));
+    // ... (phần cũ giữ nguyên)
 }
