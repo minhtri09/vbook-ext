@@ -1,20 +1,22 @@
 function execute(url) {
     let response = fetch(url, {
         headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         },
-        timeout: 3000 // 3 seconds timeout
+        timeout: 5000
     });
-
     if (response.ok) {
         let doc = response.html();
-        
+        let name = doc.select("h1.entry-title").text().trim();
+        let cover = doc.select("img.wp-post-image").first().attr("src");
+        let description = doc.select("div.entry-content p").first().text().trim();
         return Response.success({
-            name: doc.select("h1.entry-title").text(),
-            cover: doc.select("div.entry-content img").first().attr("src"),
-            description: doc.select("div.entry-content p").first().text(),
+            name: name,
+            cover: cover,
+            author: "",
+            description: description,
             detail: "",
-            host: "https://langgeek.net"
+            ongoing: true
         });
     }
     return Response.error("Không thể tải thông tin truyện");
