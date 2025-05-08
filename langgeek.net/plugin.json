@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "name": "Langgeek",
-    "author": "minhtri09",
+    "name": "LangGeek",
+    "author": "minh tri",
     "version": 1,
-    "source": "https://langgeek.net",
-    "regexp": "langgeek.net/(.*?)$",
+    "source": "https://langgeek.net/",
+    "regexp": "https://langgeek\\.net/.*",
     "description": "Đọc truyện tranh từ langgeek.net",
     "locale": "vi_VN",
     "type": "comic"
@@ -12,6 +12,7 @@
   "script": {
     "home": "home.js",
     "detail": "detail.js",
+    "search": "search.js",
     "toc": "toc.js",
     "chap": "chap.js"
   }
