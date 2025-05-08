@@ -1,18 +1,15 @@
+load('config.js');
 function execute() {
-    const response = fetch("https://langgeek.net/");
-    if (response.ok){
-        let doc = response.html('gbk');
-        let el = doc.select(".listLeft ul li a");
-        let data = [];
-        for (let i = 1; i < el.size() - 9; i++) {
-            let e = el.get(i);
-            data.push({
-                title: e.text(),
-                input: e.attr('href').split(/[\/_]/)[4],
-                script: 'gen.js'
-            });
-        }
-        return Response.success(data);
+    let doc = Http.get(BASE_URL).html();
+    let genres = [];
+    let el = doc.select('.menu-item .menu-item-type-taxonomy .menu-item-object-brand_story'); // Cần xác định đúng selector
+    for (let i = 0; i < el.size(); i++) {
+        let e = el.get(i);
+        genres.push({
+            title: e.text(),
+            input: e.attr('href'),
+            script: "gen.js"
+        });
     }
-    return null;
+    return Response.success(genres);
 }

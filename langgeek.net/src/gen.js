@@ -1,22 +1,24 @@
+// ... existing code ...
+load('config.js');
 function execute(url, page) {
-    if (!page) page = '1';
-    let response = fetch('https://langgeek.net/'+url+'_lastupdate_0_0_0_0_0_0_'+page+'.html')
-    if(response.ok){
-        let doc = response.html('gbk');
-        var next = doc.select(".page").select("strong + a").text()
-        const el = doc.select(".listRightBottom ul li")
-        const data = [];
-        for (var i = 0; i < el.size(); i++) {
-            var e = el.get(i);
-            data.push({
-                name: e.select("h2 a").first().text(),
-                link: e.select("h2 a").first().attr("href"),
-                cover: e.select("img").first().attr("src"),
-                description: e.select(".writer").first().text(),
-                host: "https://langgeek.net/"
-            })
-        }
-        return Response.success(data, next)
+    if (!page) page = 1;
+    let doc = Http.get(url + (url.includes('?') ? '&' : '?') + 'page=' + page).html();
+    let el = doc.select('div.row.row-issue:not(.row-header)');
+    let next = doc.select('.pagination a.active + a').text();
+    let data = [];
+    for (let i = 0; i < el.size(); i++) {
+        let e = el.get(i);
+        let name = e.select('div.large-5 a').text();
+        let link = e.select('div.large-5 a').attr('href');
+        let updated = e.select('div.large-3').text();
+        data.push({
+            name: name,
+            link: link,
+            cover: null,
+            description: updated,
+            host: BASE_URL
+        });
     }
-    return null
+    return Response.success(data, next);
 }
+// ... existing code ...

@@ -1,17 +1,20 @@
+load('config.js');
 function execute(key, page) {
-    let searchUrl = `https://langgeek.net/search?q=${encodeURIComponent(key)}&page=${page || 1}`;
-    let response = fetch(searchUrl);
-    if (!response.ok) return Response.error("Failed to fetch search results.");
-
-    let doc = response.html();
-    let results = doc.select(".search-result-item").toArray().map(item => ({
-        name: item.select(".title").text(),
-        link: item.select("a").attr("href"),
-        cover: item.select(".cover img").attr("src"),
-        description: item.select(".description").text()
-    }));
-
-    let nextPage = doc.select(".pagination .next").attr("href") ? (page || 1) + 1 : null;
-
-    return Response.success(results, nextPage);
+    if (!page) page = 1;
+    let url = BASE_URL + 'tim-kiem?q=' + encodeURIComponent(key) + '&page=' + page;
+    let doc = Http.get(url).html();
+    let el = doc.select('.truyen-item');
+    let next = doc.select('.pagination a.active + a').text();
+    let data = [];
+    for (let i = 0; i < el.size(); i++) {
+        let e = el.get(i);
+        data.push({
+            name: e.select('.truyen-title').text(),
+            link: e.select('a').attr('href'),
+            cover: e.select('img').attr('src'),
+            description: e.select('.truyen-desc').text(),
+            host: BASE_URL
+        });
+    }
+    return Response.success(data, next);
 }

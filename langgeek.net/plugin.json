@@ -1,19 +1,21 @@
 {
-  "metadata": {
-    "name": "LangGeek",
-    "author": "minhtri09",
-    "version": 1,
-    "source": "https://langgeek.net",
-    "regexp": "https://langgeek\\.net/.*",
-    "description": "Extension để lấy truyện từ trang langgeek.net",
-    "locale": "vi_VN",
-    "tag": "",
-    "type": "novel"
-  },
-  "script": {
-    "detail": "detail.js",
-    "toc": "toc.js",
-    "chap": "chap.js",
-    "search": "search.js"
+    "metadata": {
+      "name": "LangGeek",
+      "author": "minh_tri",
+      "version": 1,
+      "source": "https://langgeek.net",
+      "regexp": "https://langgeek.net/(.*?)",
+      "description": "Đọc truyện tranh online tại Làng Geek, cập nhật truyện mới, top truyện, hãng truyện DC, Marvel, Image, ...",
+      "locale": "vi-VN",
+      "language": "javascript",
+      "type": "comic"
+    },
+    "script": {
+      "home": "home.js",
+      "genre": "genre.js",
+      "detail": "detail.js",
+      "search": "search.js",
+      "toc": "toc.js",
+      "chap": "chap.js"
+    }
   }
-}

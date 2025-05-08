@@ -1,25 +1,32 @@
+load('config.js');
 function execute(url) {
-    let response = fetch(url);
-    if (!response.ok) return Response.error("Failed to fetch detail page.");
+    let doc = Http.get(url).html();
 
-    let doc = response.html();
-    let name = doc.select("h1.title").text();
-    let cover = doc.select(".cover img").attr("src");
-    let author = doc.select(".author a").text();
-    let description = doc.select(".description").text();
-    let ongoing = doc.select(".status").text().toLowerCase().includes("ongoing");
-    let genres = doc.select(".genres a").toArray().map(genre => ({
-        title: genre.text(),
-        input: genre.attr("href"),
-        script: "genre.js"
-    }));
+    // Lấy tên truyện
+    let name = doc.select('h1.story_title').text();
+
+    // Lấy tác giả
+    let author = '';
+    let infoItems = doc.select('.story_info ul li');
+    for (let i = 0; i < infoItems.size(); i++) {
+        let text = infoItems.get(i).text();
+        if (text.includes('Tác giả:')) {
+            author = infoItems.get(i).select('a').text();
+            break;
+        }
+    }
+
+    // Lấy giới thiệu: lấy div sau .story_info
+    let description = '';
+    let descDivs = doc.select('.article-inner > div');
+    if (descDivs.size() > 0) {
+        // Thường phần giới thiệu là div cuối cùng trong .article-inner
+        description = descDivs.last().text();
+    }
 
     return Response.success({
         name: name,
-        cover: cover,
         author: author,
-        description: description,
-        ongoing: ongoing,
-        genres: genres
+        description: description
     });
 }
