@@ -1,27 +1,16 @@
 function execute(url) {
-    let response = fetch(url, {
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-        },
-        timeout: 3000
+    var response = fetch(url);
+    if (!response.ok) return Response.error("Lỗi tải trang");
+    var doc = response.html();
+    var list = [];
+    doc.select("div.row.row-issue").forEach(e => {
+        var a = e.selectFirst("div.col.large-8.small-4 a");
+        if (a) {
+            list.push({
+                name: a.text(),
+                url: a.attr("href")
+            });
+        }
     });
-
-    if (response.ok) {
-        let doc = response.html();
-        let chapters = [];
-        
-        doc.select("div.entry-content a[href*='" + url.split("/").pop() + "']").forEach(e => {
-            let href = e.attr("href");
-            if (href && href !== url) {
-                chapters.push({
-                    name: e.text().trim(),
-                    url: href,
-                    host: "https://langgeek.net"
-                });
-            }
-        });
-
-        return Response.success(chapters);
-    }
-    return Response.error("Không thể tải danh sách chương");
+    return Response.success(list);
 }

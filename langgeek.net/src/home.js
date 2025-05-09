@@ -1,14 +1,5 @@
-unction execute() {
+function execute() {
     return Response.success([
-        { 
-            title: "DC All In Special", 
-            input: "https://langgeek.net/dc-all-in-special-2024",
-            script: "detail.js" 
-        },
-        {
-            title: "All Star Superman",
-            input: "https://langgeek.net/all-star-superman",
-            script: "detail.js"
-        }
+        {title: "Truyện ngẫu nhiên", input: "https://langgeek.net/", script: "homecontent.js"}
     ]);
 }

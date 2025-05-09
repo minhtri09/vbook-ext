@@ -1,18 +1,22 @@
-function execute(key, page) {
-    var url = "https://langgeek.net/?s=" + encodeURIComponent(key);
+function execute(url, page) {
     var response = fetch(url);
     if (!response.ok) return Response.error("Lỗi tải trang");
     var doc = response.html();
     var list = [];
-    doc.select(".col.post-item").forEach(e => {
+    var items = doc.select("div.col.post-item");
+    for (var i = 0; i < items.size(); i++) {
+        var e = items.get(i);
         var a = e.selectFirst("a");
         var img = e.selectFirst(".box-image img");
+        var name = "";
+        var boxText = e.selectFirst(".box-text.text-center");
+        if (boxText) name = boxText.text();
         list.push({
-            name: "", // Tên truyện sẽ lấy ở detail
+            name: name,
             link: a ? a.attr("href") : "",
             cover: img ? img.attr("src") : "",
             description: ""
         });
-    });
+    }
     return Response.success(list);
 }
