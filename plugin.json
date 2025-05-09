@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "author": "minhtri09",
+    "description": ""
+  },
+  "data": [
+    {
+      "name": "langgeek",
+      "author": "minhtri09",
+      "path": "https://raw.githubusercontent.com/minhtri09/vbook-ext/main/langgeek/plugin.zip",
+      "version": 1,
+      "source": "https://langgeek.net",
+      "icon": "https://raw.githubusercontent.com/minhtri09/vbook-ext/main/langgeek/icon.png",
+      "description": "Đọc truyện trên trang Langgeek.net",
+      "type": "comic",
+      "locale": "vi_VN"
+    },
+    {
+      "name": "8ternal",
+      "author": "minhtri09",
+      "path": "https://raw.githubusercontent.com/minhtri09/vbook-ext/main/8ternal/plugin.zip",
+      "version": 1,
+      "source": "https://comic.8ternal.com",
+      "icon": "https://raw.githubusercontent.com/minhtri09/vbook-ext/main/8ternal/icon.png",
+      "description": "Đọc truyện trên trang 8ternal.com",
+      "type": "comic",
+      "locale": "vi_VN"
+    }
+    
+  ]
+}
