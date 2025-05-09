@@ -8,4 +8,4 @@ Extensions cho app Vbook App.
 Tải app tại : https://bit.ly/vbookapp
 
 ## Link extension: 
-```https://raw.githubusercontent.com/minhtri09/vbook-ext/main/plugin.json
+https://raw.githubusercontent.com/minhtri09/vbook-ext/main/plugin.json
