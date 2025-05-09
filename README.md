@@ -1,7 +1,7 @@
 ## Note
 Đây là thử nghiệm cá nhân. Có thể có lỗi.
 
-09/05/2025 Update langgeek.net
+09/05/2025 Update langgeek.net, 8ternal
 ## Vbook Extensions
 Extensions cho app Vbook App.
 
