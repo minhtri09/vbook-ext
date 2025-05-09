@@ -1,15 +1,16 @@
 load('config.js');
+
 function execute(url) {
-    let doc = Http.get(url).html();
-    // Lấy tất cả các chương, bỏ qua dòng header
-    let el = doc.select('div.list_issues div.row.row-issue:not(.row-header)');
-    let data = [];
-    for (let i = 0; i < el.size(); i++) {
-        let e = el.get(i);
-        let a = e.select('div.col.large-8.small-4 a');
+    var doc = Http.get(url).html();
+    // Lấy tất cả các div chứa chương truyện
+    var el = doc.select("div.row.row-issue");
+    const data = [];
+    for (var i = 0; i < el.size(); i++) {
+        var e = el.get(i);
+        var a = e.select('a');
         data.push({
-            name: a.text(),
-            url: a.attr('href'),
+            name: a.text(), // Tên chương
+            url: a.attr("href"), // Link chương
             host: BASE_URL
         });
     }
