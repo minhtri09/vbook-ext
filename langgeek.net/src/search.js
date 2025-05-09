@@ -13,7 +13,7 @@ function execute(key, page) {
         
         let doc = Http.get(requestUrl).html();
         
-        // Selector chính xác theo HTML bạn đã cung cấp
+        // Selector chính xác theo HTML
         let el = doc.select('div.col.post-item');
         Console.log("Số kết quả tìm thấy: " + el.size());
         
