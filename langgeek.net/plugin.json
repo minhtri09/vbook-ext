@@ -1,7 +1,7 @@
 {
     "metadata": {
       "name": "LangGeek",
-      "author": "minh_tri",
+      "author": "minhtri09",
       "version": 1,
       "source": "https://langgeek.net",
       "regexp": "https://langgeek.net/(.*?)",
